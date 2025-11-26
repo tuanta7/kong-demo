@@ -7,8 +7,14 @@ Kong Gateway is a Lua application designed to load and execute **modules**. Thes
 - A plugin allows you to inject custom logic at several entrypoints in the lifecycle of a request, response, or TCP stream connection as it is proxied by Kong Gateway.
 - There are several plugins built by the community that can be used, in addition to the 90+ official plugins available on the [plugin hub](https://developer.konghq.com/plugins/)
 
-## 1. Contexts
+## 1. Concepts
 
-## 2. Scopes
 
-## 3. Priority
+
+### 1.1. Contexts
+
+### 1.2. Scopes
+
+### 1.3. Priority
+
+## 2. Lua Syntax

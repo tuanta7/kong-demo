@@ -18,9 +18,9 @@ Entities are the components and objects that make up the Kong API Gateway and it
 
 - **Gateway Services**: Represent the upstream services or APIs. They serve as the logical targets to which traffic will be proxied after routing is completed.
 - **Routes**: Routes are used to match incoming requests and direct them to the appropriate Gateway Service. They also define which plugins are applied for transforming the proxied request or response.
-- **Plugins**: Plugins are modules that extend the functionality of Kong Gateway.
+- **Plugins**: A Plugin entity represents the configuration for a specific plugin instance.
 - **Workspaces**: Workspaces are a way of namespacing Kong Gateway entities so they can be managed independently
-- **Partials**:
+- **Partials**: Partials allow reusing shared **Redis** configurations across plugins
 
 ![](./.imgs/upstream.png)
 
@@ -44,6 +44,8 @@ Entities are the components and objects that make up the Kong API Gateway and it
 - **Keys**
 - **Key Sets**
 
-## 3. Konnect Platform
+### Konnect Platform
 
-Konnect provides several built-in applications that run on top of the Konnect platform to help manage, monitor, and secure your API ecosystem, as well as provide a customizable developer experience.
+Kong Konnect is a unified API platform that manages APIs, LLMs, events, and microservices, consolidating API and connectivity management. It is delivered as a SaaS control plane for Kong Gateway and associated services.
+
+- Konnect provides several built-in applications that run on top of the Konnect platform to help manage, monitor, and secure your API ecosystem, as well as provide a customizable developer experience.
