@@ -1,0 +1,22 @@
+package = "jwt-validator"
+
+version = "0.1.0"
+
+source = { url = "" }
+
+description = {
+  summary = "JWT validator and blacklist plugin for Kong",
+  license = "MIT"
+}
+dependencies = {
+    "lua >= 5.1",
+    "lua-resty-http",
+    "lua-resty-jwt"
+}
+build = {
+  type = "builtin",
+  modules = {
+    ["kong.plugins.jwt-validator.handler"] = "handler.lua",
+    ["kong.plugins.jwt-validator.schema"] = "schema.lua",
+  }
+}
