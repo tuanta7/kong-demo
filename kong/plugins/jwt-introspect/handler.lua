@@ -1,3 +1,5 @@
+local redis = require("kong.plugins.jwt-introspect.redis")
+
 local plugin = {
     PRIORITY = 1000,
     VERSION = "1.0.0"
@@ -10,6 +12,19 @@ end
 function plugin:access(conf)
     kong.log.debug("saying hi from the 'access' handler")
     kong.log.info(conf.key)
+
+    local red, err = redis.get_redis_connection(conf)
+    if not red then
+        kong.log.err("Redis connection failed: ", err)
+        return kong.response.exit(500, "Redis unavailable")
+    end
+
+    local res, err = red:get("some-key")
+    if err then
+        kong.log.err("Redis error: ", err)
+    end
+
+    redis.release(red)
 end
 
 return plugin

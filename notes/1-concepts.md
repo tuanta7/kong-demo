@@ -33,7 +33,7 @@ Entities are the components and objects that make up the Kong API Gateway and it
 - **Consumer Groups**: Consumer Groups allow applying common configurations to groups of Consumers, such as rate limiting policies or request and response transformation.
 
 > [!NOTE]
-> Consumers are always identified before any upstream call is made. 
+> Consumers are always identified before any upstream call is made.
 
 ### Security Enitities
 
@@ -49,3 +49,5 @@ Entities are the components and objects that make up the Kong API Gateway and it
 Kong Konnect is a unified API platform that manages APIs, LLMs, events, and microservices, consolidating API and connectivity management. It is delivered as a SaaS control plane for Kong Gateway and associated services.
 
 - Konnect provides several built-in applications that run on top of the Konnect platform to help manage, monitor, and secure your API ecosystem, as well as provide a customizable developer experience.
+
+## 3. Phases

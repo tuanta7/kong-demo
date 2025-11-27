@@ -30,7 +30,7 @@ services:
       - "8444:8444" # Admin API HTTPS
       - "8002:8002" # Kong Manager HTTP
       - "8445:8445" # Kong Manager HTTPS
-  redis:
+  kong-redis:
     image: redis:latest
     container_name: kong-redis
     ports:

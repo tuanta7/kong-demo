@@ -10,9 +10,19 @@ return {
             fields = {{
                 key = {
                     type = "string",
-                    description = "Verification key"
+                    description = "Verification key",
+                    required = true
                 }
+            }, {
+                redis_host = typedefs.hosts({
+                    required = true
+                })
+            }, {
+                redis_port = typedefs.port({
+                    required = true
+                })
             }}
         }
     }}
 }
+

@@ -11,7 +11,10 @@ services:
         plugins:
           - name: jwt-introspect
             config:
-              key: "uiiuuiuiu"
+              key: uiiuuiuiu
+              redis_host:
+                - kong-redis
+              redis_port: 6379
       - name: anything
         paths:
           - /anything
