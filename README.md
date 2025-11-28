@@ -23,16 +23,21 @@ In Kubernetes environments, Kong entities can be defined using Kubernetes resour
 
 The core of the ecosystem is the API gateway, a reverse proxy that manages, routes, and configures requests to APIs.
 
-### 3.1. Konnect
+### 3.1. Kong Manager
 
-Kong Konnect is a unified API platform that manages APIs, LLMs, events, and microservices, consolidating API and connectivity management. It is delivered as a SaaS control plane for Kong Gateway and associated services.
+Kong Manager is the graphical user interface (GUI) for Kong Gateway. It uses the Admin API under the hood to administer and control Kong Gateway.
 
-- Konnect provides several built-in applications that run on top of the Konnect platform to help manage, monitor, and secure your API ecosystem, as well as provide a customizable developer experience.
+### 3.2. Konnect
 
-### 3.2. Insomnia (Postman Alternative)
+Kong Konnect is a unified API platform that manages APIs, LLMs, events, and microservices, consolidating API and connectivity management. It is delivered as a Software as a Service (SaaS) control plane for Kong Gateway and associated services.
+
+- It manages an entire API ecosystem across potentially multiple clouds and environments from a single, unified interface.
+- It also provides several built-in applications that run on top of the platform to help manage, monitor, and secure API ecosystem, as well as provide a customizable developer experience.
+
+### 3.3. Insomnia (Postman Alternative)
 
 Insomnia is an open source desktop application that simplifies designing, debugging, and testing APIs.
 
-### 3.3. decK
+### 3.4. decK
 
 decK is a command line tool that facilitates API Lifecycle Automation (APIOps) by offering a comprehensive toolkit of commands designed to orchestrate and automate the entire process of API delivery.
