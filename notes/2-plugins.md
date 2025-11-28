@@ -16,6 +16,7 @@ The following functions are used to implement plugin logic at various entry-poin
 - **rewrite**: Executed for every request upon its reception from a client as a rewrite phase handler.
 - **access**: Executed for every request from a client and before it is being proxied to the upstream service.
 - **response**: Executed after the whole response has been received from the upstream service, but before sending any part of it to the client.
+- etc.
 
 > [!NOTE]
 > All plugin functions—apart from `init_worker` and `configure` receive a single parameter (conf) supplied by Kong Gateway. This parameter is a Lua table that represents the plugin’s configuration, containing values defined by end-users based on the rules in `schema.lua`.
