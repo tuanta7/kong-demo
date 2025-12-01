@@ -45,6 +45,8 @@ Kong provides a development environment for developing plugins, including Plugin
 
 ### 2.1. Building and Packaging
 
+Reference: [Luarocks Docs | Creating a Rock](https://github.com/luarocks/luarocks/blob/main/docs/creating_a_rock.md)
+
 When a plugin must be deployed across multiple machines, containers, or runtime environments, LuaRocks provides a reproducible installation mechanism. A .rock archive ensures that the exact same code, dependencies, and version are installed consistently.
 
 ```sh

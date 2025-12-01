@@ -11,8 +11,8 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    ["kong.plugins.jwt-introspect.handler"] = "handler.lua",
-    ["kong.plugins.jwt-introspect.schema"] = "schema.lua",
-    ["kong.plugins.jwt-introspect.redis"] = "redis.lua",
+    ["kong.plugins.introspect.handler"] = "kong/plugins/introspect/handler.lua",
+    ["kong.plugins.introspect.schema"] = "kong/plugins/introspect/schema.lua",
+    ["kong.plugins.introspect.redis"] = "kong/plugins/introspect/redis.lua",
   }
 }

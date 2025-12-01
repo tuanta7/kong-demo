@@ -6,7 +6,7 @@ services:
     networks:
       - kong-net
     volumes:
-      - ./plugins/jwt-introspect:/usr/local/share/lua/5.1/kong/plugins/jwt-introspect
+      - ../jwt-introspect/kong/plugins/introspect:/usr/local/share/lua/5.1/kong/plugins/jwt-introspect
       - ./declarative:/kong/declarative/
       - ./prefix_volume:/var/run/kong
       - ./tmp_volume:/tmp

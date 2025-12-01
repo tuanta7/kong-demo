@@ -1,4 +1,4 @@
-local redis = require("kong.plugins.jwt-introspect.redis")
+local redis = require("kong.plugins.introspect.redis")
 
 local plugin = {
     PRIORITY = 1000,
