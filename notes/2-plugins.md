@@ -2,7 +2,7 @@
 
 Reference: [Plugins - Kong Gateway](https://developer.konghq.com/gateway/entities/plugin)
 
-Kong Gateway is a Lua application designed to load and execute **modules**. These modules, called plugins, allow you to add more features to your implementation.
+Kong Gateway is a Lua application designed to load and execute **modules**. These modules, called plugins, allow you to add more features to your implementation. There are several plugins built by the community that can be used, in addition to the 90+ official plugins available on the [plugin hub](https://developer.konghq.com/plugins/)
 
 ## 1. Concepts
 
@@ -41,12 +41,76 @@ All of the plugins bundled with Kong Gateway have a static priority. This can be
 
 ## 2. Custom Plugin (Lua)
 
-There are several plugins built by the community that can be used, in addition to the 90+ official plugins available on the [plugin hub](https://developer.konghq.com/plugins/)
-
 Kong provides a development environment for developing plugins, including Plugin Development Kits (or PDKs), database abstractions, migrations, and more.
 
-### 2.1. Luarock
+### 2.1 LuaRocks
 
-LuaRocks is a package manager for the Lua programming language that provides a standard format for distributing Lua modules (similar to how npm manages packages for Node.js/JavaScript)
+References: 
+
+- [Luarocks Docs | Creating a Rock](https://github.com/luarocks/luarocks/blob/main/docs/creating_a_rock.md)
+- [Rockspec Format](https://github.com/luarocks/luarocks/blob/main/docs/rockspec_format.md) 
+
+> [!NOTE]
+> LuaRocks is a package manager for the Lua programming language that provides a standard format for distributing Lua modules (similar to how npm manages packages for Node.js/JavaScript)
+
+A rockspec is actually a Lua file, but it is loaded in an empty environment, so there are no Lua functions available. A skeleton for a basic rockspec looks can be written by hand or generated using `luarocks write_rockspec`.
+
+An example Rockspec structure is shown below:
+
+```lua
+package = "template"
+version = "0.3-1"
+
+source = {
+  url = "git://github.com/dannote/lua-template.git"
+}
+
+description = {
+  summary = "The simplest Lua template engine in just a few lines of code",
+  homepage = "https://github.com/dannote/lua-template",
+  maintainer = "Danila Poyarkov <dannotemail@gmail.com>",
+  license = "MIT"
+}
+
+dependencies = {
+  "lua >= 5.0"
+}
+
+build = {
+  type = "builtin",
+  modules = {
+    ["template"] = "template.lua"
+  },
+  install = {
+    bin = { "templatec" }
+  }
+}
+```
+
+Once the Rockspec is present in the plugin repository, the plugin can be packaged through the LuaRocks toolchain.
+
+#### Building and Packaging
+
+The following commands are executed from the root directory of the plugin:
+
+```sh
+# Build and install the rock locally based on the Rockspec
+luarocks make
+
+# Produce a .rock archive from the installed version
+luarocks pack PLUGIN-NAME PLUGIN-VERSION
+```
+
+LuaRocks also offers commands that assist with version evolution:
+
+```sh
+# Write a template for a rockspec file
+luarocks write_rockspec
+
+# Generate a new Rockspec version derived from an existing one
+luarocks new_version
+```
+
+This mechanism is available only after the initial Rockspec has been created.
 
 ### 2.2. Syntaxes & Conventions
