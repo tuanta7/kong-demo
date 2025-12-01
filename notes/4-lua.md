@@ -66,3 +66,5 @@ luarocks make
 There is NO automatic checking mechanism that validates whether the modules that require() in the code are actually available.
 
 ### 1.3. Syntaxes & Conventions
+
+## 2. OpenResty
