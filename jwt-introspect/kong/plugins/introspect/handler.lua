@@ -2,7 +2,7 @@ local redis = require("kong.plugins.introspect.redis")
 
 local plugin = {
     PRIORITY = 1000,
-    VERSION = "1.0.0"
+    VERSION = "0.1.0-0"
 }
 
 function plugin:init_worker()
@@ -22,6 +22,8 @@ function plugin:access(conf)
     local res, err = red:get("some-key")
     if err then
         kong.log.err("Redis error: ", err)
+    else
+        kong.log.info("cached value: ", res)
     end
 
     redis.release(red)

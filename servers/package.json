@@ -1,0 +1,13 @@
+{
+  "name": "servers",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jwk.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "jwk": "node jwk.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

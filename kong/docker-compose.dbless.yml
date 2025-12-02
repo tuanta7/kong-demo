@@ -1,12 +1,14 @@
 services:
   kong-dbless:
-    image: kong/kong-gateway:latest
     container_name: kong-dbless
     read_only: true
+    build:
+      # docker build can not copy file outside the build context.
+      context: ..
+      dockerfile: kong/Dockerfile
     networks:
       - kong-net
     volumes:
-      - ../jwt-introspect/kong/plugins/introspect:/usr/local/share/lua/5.1/kong/plugins/jwt-introspect
       - ./declarative:/kong/declarative/
       - ./prefix_volume:/var/run/kong
       - ./tmp_volume:/tmp
@@ -14,7 +16,7 @@ services:
       KONG_PREFIX: /var/run/kong
       KONG_DATABASE: off
       KONG_DECLARATIVE_CONFIG: /kong/declarative/kong.yml
-      KONG_PLUGINS: bundled, jwt-introspect
+      KONG_PLUGINS: bundled, introspect
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_ADMIN_GUI_URL: http://localhost:8002
       KONG_PROXY_ACCESS_LOG: /dev/stdout

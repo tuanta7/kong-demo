@@ -9,7 +9,7 @@ services:
           - /admin
           - /private
         plugins:
-          - name: jwt-introspect
+          - name: introspect
             config:
               key: uiiuuiuiu
               redis_host:

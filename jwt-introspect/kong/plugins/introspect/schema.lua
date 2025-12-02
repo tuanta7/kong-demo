@@ -1,6 +1,6 @@
 local typedefs = require "kong.db.schema.typedefs"
 
-local PLUGIN_NAME = "jwt-introspect"
+local PLUGIN_NAME = "introspect"
 
 return {
     name = PLUGIN_NAME,
