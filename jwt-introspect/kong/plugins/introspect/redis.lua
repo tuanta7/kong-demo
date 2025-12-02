@@ -1,4 +1,5 @@
 local redis = require "resty.redis"
+local cjson = require "cjson.safe"
 
 local _M = {}
 
@@ -6,7 +7,7 @@ function _M.get_redis_connection(conf)
     local red = redis:new()
     red:set_timeout(1000)
 
-    local ok, err = red:connect(conf.redis_host[1], conf.redis_port)
+    local ok, err = red:connect(conf.redis_host, conf.redis_port)
     if not ok then
         return nil, "failed to connect: " .. (err or "")
     end

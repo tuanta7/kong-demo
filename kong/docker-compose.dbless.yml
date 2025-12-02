@@ -42,3 +42,4 @@ services:
 
 networks:
   kong-net:
+    driver: bridge

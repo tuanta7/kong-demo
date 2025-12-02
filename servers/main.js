@@ -21,9 +21,9 @@ app.get("/.well-known/jwks.json", (req, res) => {
   res.json(jwkSet);
 });
 
-app.listen(PORT, () => {
-  console.log(`JWKS server listening on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`JWKS server listening on http://0.0.0.0:${PORT}`);
   console.log(
-    `Public JWK Set available at http://localhost:${PORT}/.well-known/jwks.json`
+    `Public JWK Set available at http://0.0.0.0:${PORT}/.well-known/jwks.json`
   );
 });

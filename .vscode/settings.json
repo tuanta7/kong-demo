@@ -1,3 +1,3 @@
 {
-  "Lua.diagnostics.globals": ["kong"]
+  "Lua.diagnostics.globals": ["kong", "ngx"]
 }

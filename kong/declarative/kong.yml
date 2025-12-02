@@ -11,9 +11,8 @@ services:
         plugins:
           - name: introspect
             config:
-              key: uiiuuiuiu
-              redis_host:
-                - kong-redis
+              jwks_uri: http://host.docker.internal:3000/.well-known/jwks.json
+              redis_host: kong-redis
               redis_port: 6379
       - name: anything
         paths:

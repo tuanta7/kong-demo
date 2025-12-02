@@ -1,8 +1,10 @@
-FROM kong:3.8
+FROM kong:3.9-ubuntu
 
 USER root
 
 WORKDIR /plugins/jwt-introspect
+RUN apt-get update -yq && apt-get install -yqq curl
+
 COPY jwt-introspect /plugins/jwt-introspect
 
 # builds and installs a rock from a local .rockspec file and source code
