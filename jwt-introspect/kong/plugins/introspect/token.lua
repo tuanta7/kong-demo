@@ -106,7 +106,7 @@ end
 local function validate_claims(payload, options)
     options = options or {}
     local now = ngx.time()
-    local clock_skew = options.clock_skew or 10 -- 10 seconds default
+    local clock_skew = options.clock_skew or 0
 
     if payload.exp then
         if type(payload.exp) ~= "number" then
@@ -137,31 +137,31 @@ local function validate_claims(payload, options)
         end
     end
 
-    if options.issuer then
-        if payload.iss ~= options.issuer then
-            return false, "Invalid issuer: expected " .. options.issuer
-        end
-    end
+    -- if options.issuer then
+    --     if payload.iss ~= options.issuer then
+    --         return false, "Invalid issuer: expected " .. options.issuer
+    --     end
+    -- end
 
-    if options.audience then
-        local aud = payload.aud
-        local valid_aud = false
+    -- if options.audience then
+    --     local aud = payload.aud
+    --     local valid_aud = false
 
-        if type(aud) == "string" then
-            valid_aud = (aud == options.audience)
-        elseif type(aud) == "table" then
-            for _, a in ipairs(aud) do
-                if a == options.audience then
-                    valid_aud = true
-                    break
-                end
-            end
-        end
+    --     if type(aud) == "string" then
+    --         valid_aud = (aud == options.audience)
+    --     elseif type(aud) == "table" then
+    --         for _, a in ipairs(aud) do
+    --             if a == options.audience then
+    --                 valid_aud = true
+    --                 break
+    --             end
+    --         end
+    --     end
 
-        if not valid_aud then
-            return false, "Invalid audience"
-        end
-    end
+    --     if not valid_aud then
+    --         return false, "Invalid audience"
+    --     end
+    -- end
 
     return true
 end
@@ -189,10 +189,10 @@ function _M.validate_token(conf, token, options)
         return nil, sig_err or "Invalid signature"
     end
 
-    -- local claims_valid, claims_err = validate_claims(jwt.payload, options)
-    -- if not claims_valid then
-    --     return nil, claims_err
-    -- end
+    local claims_valid, claims_err = validate_claims(jwt.payload, options)
+    if not claims_valid then
+        return nil, claims_err
+    end
 
     return jwt.payload
 end
