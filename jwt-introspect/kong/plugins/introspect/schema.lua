@@ -39,7 +39,7 @@ return {
                 cache_ttl = {
                     type = "integer",
                     description = "JWKS cache TTL in seconds",
-                    default = 0
+                    default = 36000 -- 10hrs
                 }
             }, {
                 redis_host = typedefs.host({

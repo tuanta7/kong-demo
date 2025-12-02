@@ -28,7 +28,7 @@ function plugin:access(conf)
         clock_skew = conf.clock_skew
     }
 
-    local payload, err = token.validate_token(conf, jwt, conf.jwks_uri, options)
+    local payload, err = token.validate_token(conf, jwt, options)
     if not payload then
         kong.log.warn("Token validation failed: ", err)
         return kong.response.exit(401, {
@@ -37,7 +37,7 @@ function plugin:access(conf)
         })
     end
 
-    local is_blacklisted, blacklist_err = key.is_blacklisted(conf, payload.jti)
+    local is_blacklisted, blacklist_err = token.is_blacklisted(conf, payload.jti)
     if blacklist_err then
         kong.log.err("Blacklist check failed: ", blacklist_err)
         return kong.response.exit(500, {

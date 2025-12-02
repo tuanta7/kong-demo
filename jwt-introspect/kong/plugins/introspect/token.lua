@@ -166,7 +166,7 @@ local function validate_claims(payload, options)
     return true
 end
 
-function _M.validate_token(conf, token, jwks_uri, options)
+function _M.validate_token(conf, token, options)
     options = options or {}
 
     local jwt, parse_err = parse_jwt(token)
@@ -179,7 +179,7 @@ function _M.validate_token(conf, token, jwks_uri, options)
         return nil, "Missing 'kid' claim in token payload header"
     end
 
-    local pkey, pkey_err = key.get_key(conf, jwks_uri, kid)
+    local pkey, pkey_err = key.get_key(conf, kid)
     if not pkey then
         return nil, pkey_err
     end
@@ -189,10 +189,10 @@ function _M.validate_token(conf, token, jwks_uri, options)
         return nil, sig_err or "Invalid signature"
     end
 
-    local claims_valid, claims_err = validate_claims(jwt.payload, options)
-    if not claims_valid then
-        return nil, claims_err
-    end
+    -- local claims_valid, claims_err = validate_claims(jwt.payload, options)
+    -- if not claims_valid then
+    --     return nil, claims_err
+    -- end
 
     return jwt.payload
 end

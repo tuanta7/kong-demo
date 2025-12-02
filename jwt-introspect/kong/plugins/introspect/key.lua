@@ -1,10 +1,8 @@
 local cjson = require("cjson.safe")
 local http = require("resty.http")
 local pkey = require("resty.openssl.pkey")
-local bn = require("resty.openssl.bn")
 
 local redis = require("kong.plugins.introspect.redis")
-local utils = require("kong.plugins.introspect.utils")
 
 local KEY_PREFIX = "pk:"
 
@@ -46,60 +44,6 @@ function _M.fetch_jwks(jwks_uri, timeout)
     return keys
 end
 
-local function jwk_to_pem_rsa(jwk)
-    local n = utils.base64url_decode(jwk.n)
-    local e = utils.base64url_decode(jwk.e)
-
-    if not n or not e then
-        return nil, "Invalid RSA JWK: missing n or e"
-    end
-
-    local n_bn = bn.from_binary(n)
-    local e_bn = bn.from_binary(e)
-
-    local pk, err = pkey.new({
-        type = "RSA",
-        n = n_bn,
-        e = e_bn
-    })
-
-    if not pk then
-        return nil, "Failed to create RSA public key: " .. (err or "unknown error")
-    end
-
-    return pk
-end
-
-local function jwk_to_pem_ed25519(jwk)
-    local x = utils.base64url_decode(jwk.x)
-
-    if not x then
-        return nil, "Invalid Ed25519 JWK: missing x"
-    end
-
-    local pk, err = pkey.new({
-        type = "Ed25519",
-        pub = x
-    })
-
-    if not pk then
-        return nil, "Failed to create Ed25519 public key: " .. (err or "unknown error")
-    end
-
-    return pk
-end
-
-function _M.jwk_to_pubkey(jwk)
-    local kty = jwk.kty
-    if kty == "RSA" then
-        return jwk_to_pem_rsa(jwk)
-    elseif kty == "OKP" and jwk.crv == "Ed25519" then
-        return jwk_to_pem_ed25519(jwk)
-    else
-        return nil, "Unsupported key type: " .. (kty or "unknown")
-    end
-end
-
 local function cache_jwk(red, key, json_jwk, ttl)
     if ttl > 0 then
         local ok, err = red:set(key, json_jwk, "EX", ttl)
@@ -138,9 +82,9 @@ function _M.cache_all_jwks(conf, keys)
     return true
 end
 
-local function refresh_jwk_cache(conf, jwks_uri)
-    kong.log.info("Fetching JWKS from: ", jwks_uri)
-    local keys, err = _M.fetch_jwks(jwks_uri)
+local function refresh_jwk_cache(conf)
+    kong.log.info("Fetching JWKS from: ", conf.jwks_uri)
+    local keys, err = _M.fetch_jwks(conf.jwks_uri)
     if not keys then
         return nil, err
     end
@@ -172,21 +116,19 @@ local function get_key(conf, kid)
         return nil, nil
     end
 
-    local jwk, decode_err = cjson.decode(res)
-    if not jwk then
-        return nil, "Failed to decode cached JWK: " .. (decode_err or "invalid JSON")
-    end
-
-    local pkey, pkey_err = _M.jwk_to_pubkey(jwk)
-    if not pkey then
-        return nil, "Failed to load public key in jwk format: " .. pkey_err
+    -- res is already a JSON string from Redis, pass it directly to pkey.new
+    local pk, pkey_err = pkey.new(res, {
+        format = "JWK"
+    })
+    if not pk then
+        return nil, "Failed to create public key from JWK: " .. (pkey_err or "unknown error")
     end
 
     kong.log.debug("Cache hit for kid: ", kid)
-    return pkey
+    return pk
 end
 
-function _M.get_key(conf, jwks_uri, kid)
+function _M.get_key(conf, kid)
     local cached_jwk, cache_err = get_key(conf, kid)
     if cached_jwk then
         kong.log.debug("Using cached JWK for kid: ", kid)
@@ -198,7 +140,7 @@ function _M.get_key(conf, jwks_uri, kid)
     end
 
     -- Cache miss - fetch all JWKs from endpoint
-    local keys, fetch_err = refresh_jwk_cache(conf, jwks_uri)
+    local keys, fetch_err = refresh_jwk_cache(conf)
     if not keys then
         return nil, fetch_err
     end
