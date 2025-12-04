@@ -10,10 +10,10 @@ const PORT = process.env.PORT || 3000;
 
 const keyStore = [];
 
-keyStore.push(genRsaKeyPair());
-keyStore.push(genRsaKeyPair());
 keyStore.push(genEd25519KeyPair());
 keyStore.push(genEd25519KeyPair());
+keyStore.push(genRsaKeyPair());
+keyStore.push(genRsaKeyPair());
 
 app.get("/.well-known/jwks.json", (req, res) => {
   const jwkSet = [];

@@ -4,18 +4,7 @@ local redis = require("kong.plugins.introspect.redis")
 local key = require("kong.plugins.introspect.key")
 local utils = require("kong.plugins.introspect.utils")
 
-local BLACKLIST_PREFIX = "bl:"
-
-local alg_map = {
-    RS256 = {
-        type = "RSA",
-        digest = "sha256"
-    },
-    EdDSA = {
-        type = "Ed25519",
-        digest = nil
-    }
-}
+local BLACKLIST_PREFIX = "token:blacklist:jti:"
 
 local _M = {}
 
@@ -83,16 +72,22 @@ local function parse_jwt(token)
     }
 end
 
+local alg_map = {
+    RS256 = {
+        type = "RSA",
+        digest = "sha256"
+    },
+    EdDSA = {
+        type = "Ed25519",
+        digest = nil
+    }
+}
+
 local function verify_signature(jwt, pubkey)
     local alg = jwt.header.alg
     local alg_info = alg_map[alg]
-
     if not alg_info then
         return false, "Unsupported algorithm: " .. (alg or "unknown")
-    end
-
-    if alg_info.type == "HMAC" then
-        return false, "HMAC algorithms require symmetric key verification"
     end
 
     local ok, err = pubkey:verify(jwt.signature, jwt.signing_input, alg_info.digest)
@@ -105,6 +100,7 @@ end
 
 local function validate_claims(payload, options)
     options = options or {}
+
     local now = ngx.time()
     local clock_skew = options.clock_skew or 0
 
@@ -166,9 +162,7 @@ local function validate_claims(payload, options)
     return true
 end
 
-function _M.validate_token(conf, token, options)
-    options = options or {}
-
+function _M.validate_token(conf, token)
     local jwt, parse_err = parse_jwt(token)
     if not jwt then
         return nil, parse_err
@@ -189,6 +183,13 @@ function _M.validate_token(conf, token, options)
         return nil, sig_err or "Invalid signature"
     end
 
+    local options = {
+        issuer = conf.issuer,
+        audience = conf.audience,
+        require_exp = conf.require_exp,
+        clock_skew = conf.clock_skew
+    }
+
     local claims_valid, claims_err = validate_claims(jwt.payload, options)
     if not claims_valid then
         return nil, claims_err
@@ -202,25 +203,18 @@ function _M.is_blacklisted(conf, jti)
         return nil, "Missing 'jti' claim in token payload"
     end
 
-    local red, err = redis.get_redis_connection(conf)
-    if not red then
+    local key = BLACKLIST_PREFIX .. jti
+    local exists, err = redis.exists(conf, key)
+    if err then
         return nil, err
     end
 
-    local key = BLACKLIST_PREFIX .. jti
-    local res, err = red:exists(key)
-    redis.release(red)
-
-    if not res then
-        return nil, "Redis EXISTS failed: " .. (err or "unknown")
-    end
-
-    if (res == 1) then
+    if exists then
         kong.log.info("Token is blacklisted, jti: ", jti)
-        return true
+        return true, nil
     end
 
-    return nil
+    return false, nil
 end
 
 return _M

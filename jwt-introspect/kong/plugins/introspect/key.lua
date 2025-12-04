@@ -2,7 +2,7 @@ local cjson = require("cjson.safe")
 local http = require("resty.http")
 local pkey = require("resty.openssl.pkey")
 
-local redis = require("kong.plugins.introspect.redis")
+local cache = require("kong.plugins.introspect.local_cache")
 
 local KEY_PREFIX = "pk:"
 
@@ -44,41 +44,29 @@ function _M.fetch_jwks(jwks_uri, timeout)
     return keys
 end
 
-local function cache_jwk(red, key, json_jwk, ttl)
-    if ttl > 0 then
-        local ok, err = red:set(key, json_jwk, "EX", ttl)
-        return ok, err
-    end
-
-    local ok, err = red:set(key, json_jwk)
-    return ok, err
-end
-
 function _M.cache_all_jwks(conf, keys)
-    local red, err = redis.get_redis_connection(conf)
-    if not red then
-        return nil, err
-    end
-
-    local cached_count = 0
+    local kvs = {}
     for _, jwk in ipairs(keys) do
         if jwk.kid then
             local key = KEY_PREFIX .. jwk.kid
             local json_jwk, encode_err = cjson.encode(jwk)
             if json_jwk then
-                local ok, err = cache_jwk(red, key, json_jwk, conf.cache_ttl)
-                if ok then
-                    cached_count = cached_count + 1
-                    kong.log.debug("Cached JWK for kid: ", jwk.kid)
-                else
-                    kong.log.warn("Failed to cache JWK for kid: ", jwk.kid, " error: ", err)
-                end
+                table.insert(kvs, key)
+                table.insert(kvs, json_jwk)
             end
         end
     end
 
-    redis.release(red)
-    kong.log.info("Cached ", cached_count, " keys in Redis")
+    if #kvs == 0 then
+        return nil, "no valid JWKs to cache"
+    end
+
+    local ok, err = cache.setAll(conf, kvs, conf.cache_ttl)
+    if not ok then
+        return nil, err
+    end
+
+    kong.log.info("Cached ", #kvs / 2, " keys in local cache")
     return true
 end
 
@@ -91,32 +79,26 @@ local function refresh_jwk_cache(conf)
 
     local cache_ok, cache_err = _M.cache_all_jwks(conf, keys)
     if not cache_ok then
-        kong.log.warn("Failed to cache JWKs in Redis: ", cache_err)
+        kong.log.warn("Failed to cache JWKs in local cache: ", cache_err)
     end
 
     return keys
 end
 
 local function get_key(conf, kid)
-    local red, err = redis.get_redis_connection(conf)
-    if not red then
-        return nil, err
-    end
-
     local key = KEY_PREFIX .. kid
-    local res, err = red:get(key)
-    redis.release(red)
+    local res, err = cache.get(conf, key)
+
+    if err then
+        return nil, "Cache GET failed: " .. err
+    end
 
     if not res then
-        return nil, "Redis GET failed: " .. (err or "unknown")
-    end
-
-    if res == ngx.null then
         -- Key not found, not an error
         return nil, nil
     end
 
-    -- res is already a JSON string from Redis, pass it directly to pkey.new
+    -- res is already a JSON string from cache, pass it directly to pkey.new
     local pk, pkey_err = pkey.new(res, {
         format = "JWK"
     })

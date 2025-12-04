@@ -21,14 +21,7 @@ function plugin:access(conf)
         })
     end
 
-    local options = {
-        issuer = conf.issuer,
-        audience = conf.audience,
-        require_exp = conf.require_exp,
-        clock_skew = conf.clock_skew
-    }
-
-    local payload, err = token.validate_token(conf, jwt, options)
+    local payload, err = token.validate_token(conf, jwt)
     if not payload then
         kong.log.warn("Token validation failed: ", err)
         return kong.response.exit(401, {
