@@ -12,30 +12,6 @@ return {
                     required = true
                 }
             }, {
-                issuer = {
-                    type = "string",
-                    description = "Expected token issuer (iss claim)",
-                    required = false
-                }
-            }, {
-                audience = {
-                    type = "string",
-                    description = "Expected token audience (aud claim)",
-                    required = false
-                }
-            }, {
-                require_exp = {
-                    type = "boolean",
-                    description = "Require expiration claim in token",
-                    default = true
-                }
-            }, {
-                clock_skew = {
-                    type = "integer",
-                    description = "Allowed clock skew in seconds",
-                    default = 60
-                }
-            }, {
                 cache_ttl = {
                     type = "integer",
                     description = "JWKS cache TTL in seconds",
@@ -62,6 +38,30 @@ return {
                     description = "Redis database number",
                     default = 0,
                     required = false
+                }
+            }, {
+                issuer = {
+                    type = "string",
+                    description = "Expected token issuer (iss claim)",
+                    required = false
+                }
+            }, {
+                audience = {
+                    type = "string",
+                    description = "Expected token audience (aud claim)",
+                    required = false
+                }
+            }, {
+                require_exp = {
+                    type = "boolean",
+                    description = "Require expiration claim in token",
+                    default = true
+                }
+            }, {
+                clock_skew = {
+                    type = "integer",
+                    description = "Allowed clock skew in seconds",
+                    default = 60
                 }
             }}
         }
