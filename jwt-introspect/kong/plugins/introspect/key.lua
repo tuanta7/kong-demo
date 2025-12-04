@@ -85,10 +85,9 @@ local function refresh_jwk_cache(conf)
     return keys
 end
 
-local function get_key(conf, kid)
+local function get_pkey(conf, kid)
     local key = KEY_PREFIX .. kid
     local res, err = cache.get(conf, key)
-
     if err then
         return nil, "Cache GET failed: " .. err
     end
@@ -111,7 +110,7 @@ local function get_key(conf, kid)
 end
 
 function _M.get_key(conf, kid)
-    local cached_jwk, cache_err = get_key(conf, kid)
+    local cached_jwk, cache_err = get_pkey(conf, kid)
     if cached_jwk then
         kong.log.debug("Using cached JWK for kid: ", kid)
         return cached_jwk
@@ -121,13 +120,13 @@ function _M.get_key(conf, kid)
         kong.log.debug("Cache miss for kid: ", kid, " reason: ", cache_err)
     end
 
-    -- Cache miss - fetch all JWKs from endpoint
+    -- Cache miss
     local keys, fetch_err = refresh_jwk_cache(conf)
     if not keys then
         return nil, fetch_err
     end
 
-    local jwk = get_key(conf, kid)
+    local jwk = get_pkey(conf, kid)
     if not jwk then
         return nil, "No matching key found for kid: " .. kid
     end

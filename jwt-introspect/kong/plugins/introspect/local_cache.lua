@@ -61,8 +61,14 @@ function _M.setAll(conf, kvs, ttl)
     end
 
     if #errors > 0 then
+        kong.log.warn("setAll completed with errors: ", table.concat(errors, "; "))
         return nil, table.concat(errors, "; ")
     end
+
+    local cache = _M.store
+    local count = type(kvs[1]) == "table" and #kvs or #kvs / 2
+    kong.log.debug("setAll cached ", count, " keys with TTL ", ttl or 0)
+    kong.log.debug(" | shm capacity: ", cache:capacity(), " | free space: ", cache:free_space())
 
     return true, nil
 end
