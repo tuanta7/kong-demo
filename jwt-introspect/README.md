@@ -4,6 +4,7 @@ A small Kong plugin that performs token introspection. It validates JWTs (RS256 
 
 - Kong plugin name (module): `introspect`
 - Directory name: `jwt-introspect`
+- Prometheus Plugin: [kong/plugins/prometheus](https://github.com/Kong/kong/tree/122804286587ed4b238334f635331db2469a93a2/kong/plugins/prometheus)
 
 ## Installation
 
