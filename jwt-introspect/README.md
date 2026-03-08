@@ -11,17 +11,15 @@ A small Kong plugin that performs token introspection. It validates JWTs (RS256 
 ### 1. Build & install inside the image (recommended)
 
 - The repository already includes a `Dockerfile` that runs `luarocks make` to install the plugin from the local rockspec. This places the plugin modules under Kong's Lua path so `require("kong.plugins.introspect.*")` works as expected.
-
 - Build and run with docker-compose (from the `kong` folder):
 
-  ```bash
-  docker compose -f docker-compose.dbless.yml up --build
-  ```
+```bash
+docker compose -f docker-compose.dbless.yml up --build
+```
 
 ### 2. Mount the plugin as a volume (convenient for development)
 
 - Mount the plugin folder into Kong's runtime Lua path and set `KONG_PLUGINS` to include `introspect`.
-
 - Example `docker-compose` snippet (volume + env):
 
 ```yaml
@@ -50,7 +48,6 @@ Module names and rockspec
 plugins:
 - name: introspect
     config:
-        key: "<verification-key>"
         redis_host: ["redis"]
         redis_port: 6379
 ```
